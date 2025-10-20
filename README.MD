@@ -1,16 +1,16 @@
-🦸🏽‍♂️ charly 🦸🏽‍♂️
+# 🦸🏽‍♂️ charly 🦸🏽‍♂️
 
 a comprehensive model context protocol (mcp) server gateway that integrates multiple mcp servers with unified authentication through oauth2 and bearer tokens including a convenient web client.
 
-# requirements
+## requirements
 
 - node (>= 22.0)
 - python (>= 3.0)
 - php (>=8.0)
 
-# setup
+## setup
 
-## installation
+### installation
 
 - `git clone git@github.com:vielhuber/charly.git .`
 - `cp config.example config.json`
@@ -21,43 +21,43 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 - `pip install -r requirements.txt`
 - setup vhost (apache/nginx with ssl) that points to `/client`
 
-## update
+### update
 
 - `git pull`
 
-## cloudflare
+### cloudflare
 
 - [https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/create-local-tunnel/](https://developers.cloudflare.com)
 
-## auth0
+### auth0
 
-- Register/login on https://auth0.com
-- Applications > APIs
-    - Copy `API Audience`
-- User Management > Create User
+- register/login on https://auth0.com
+- applications > apis
+    - copy `api audience`
+- user management > create user
 
-### browser
+#### browser
 
-- Applications > Applications > Create Application
-    - Type: `Single Page Web Applications`
-    - Allowed Callback URLs: `https://*.ngrok-free.app/auth/auth/callback,https://your-custom-domain.com/auth/auth/callback`
-    - Copy `Client ID` and `Client Secret`
-- Test
-    - chatgpt.com / claude.ai / ChatGPT Playground: Login via Browser
-    - MCP Inspector: Start oAuth Flow or simply click "Connect" (the browser redirects); Remove "Add custom headers"!
+- applications > applications > create application
+    - type: `Single Page Web Applications`
+    - allowed callback urls: `https://*.ngrok-free.app/auth/auth/callback,https://your-custom-domain.com/auth/auth/callback`
+    - copy `Client ID` and `Client Secret`
+- test
+    - chatgpt.com / claude.ai / chatgpt playground: login via browser
+    - mcp inspector: start oauth flow or simply click "connect" (the browser redirects); remove "add custom headers"!
 
-### api
+#### api
 
-- Applications > Applications > Create Application
-    - Type: `Machine to Machine Applications`
-    - API: Auth0 Management API > Permissions: All
-    - Copy `Client ID` and `Client Secret`
-- Test
-    - Create token `xxx` (e.g. via curl) to authorize with bearer token
-    - MCP Inspector: Add Custom Headers: `Authorization: Bearer xxx`
-    - Claude API / ChatGPT API: `"authorization_token": "xxx"`
+- applications > applications > create application
+    - type: `Machine to Machine Applications`
+    - api: auth0 management api > permissions: all
+    - copy `Client ID` and `Client Secret`
+- test
+    - create token `xxx` (e.g. via curl) to authorize with bearer token
+    - mcp inspector: add custom headers: `Authorization: Bearer xxx`
+    - claude api / chatgpt api: `"authorization_token": "xxx"`
 
-## chrome
+### chrome
 
 - add fresh chrome profile
 - download chrome extension from https://github.com/hangwin/mcp-chrome
@@ -79,16 +79,16 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
     - powershell (admin):
         - `New-NetFirewallRule -DisplayName "chrome-mcp" -Direction Inbound -LocalPort 12306 -Action Allow -Protocol TCP`
     - test:
-        - windows: http://127.0.0.1:12306/mcp
-        - wsl: http://192.168.0.2:12306/mcp (local ip from `ipconfig`)
+        - windows: `http://127.0.0.1:12306/mcp`
+        - wsl: `http://192.168.0.2:12306/mcp` (local ip from `ipconfig`)
 
-# usage
+## usage
 
-## server
+### server
 
 - `uvicorn server.mcp:app --host 0.0.0.0 --port 8000`
 - `cloudflared tunnel run --url http://localhost:8000 TUNNEL`
 
-## client
+### client
 
 - `https://your-client-tld.local`
