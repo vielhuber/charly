@@ -1,0 +1,16 @@
+{
+    "name": "charly",
+    "description": "",
+    "type": "module",
+    "version": "0.1.0",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.18.2",
+        "baileys": "^7.0.0-rc.3",
+        "qrcode": "^1.5.4"
+    },
+    "devDependencies": {
+        "@prettier/plugin-php": ">=0.22",
+        "prettier": ">=3",
+        "prettier-plugin-sh": "^0.14.0"
+    }
+}

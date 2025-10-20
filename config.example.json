@@ -1,0 +1,55 @@
+{
+    "clientDb": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "charly",
+        "password": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "database": "charly"
+    },
+    "auth0": {
+        "BASE_URL": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "AUTH0_URL": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "AUTH0_CLIENT_ID": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "AUTH0_CLIENT_SECRET": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    "mcpServers": [
+        {
+            "name": "php",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/usr/bin/php",
+                "args": ["/var/www/charly/mcp/php/mcp.php"]
+            }
+        },
+        {
+            "name": "chrome",
+            "type": "http",
+            "auth": "oauth2",
+            "config": {
+                "url": "http://172.24.160.1:12306/mcp"
+            }
+        },
+        {
+            "name": "filesystem",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/root/.nvm/versions/node/v23.5.0/bin/node",
+                "args": [
+                    "/var/www/charly/mcp/filesystem/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
+                    "/var/www"
+                ]
+            }
+        },
+        {
+            "name": "whatsapp",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/root/.nvm/versions/node/v23.5.0/bin/node",
+                "args": ["/var/www/nebro/wp-content/themes/nebro/_mcp/js/mcp.js"]
+            }
+        }
+    ]
+}
