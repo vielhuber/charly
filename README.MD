@@ -30,7 +30,7 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 - `npm install`
 - `python -m venv venv`
 - `pip install -r requirements.txt`
-- setup vhost (apache/nginx with ssl) that points to `/client`
+- setup vhost (apache/nginx with ssl) that points to `/client/_public`
 
 ### update
 

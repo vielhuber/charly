@@ -7,3 +7,10 @@
 /venv
 auth_info_baileys
 __pycache__
+.idea/
+__image_snapshots__
+*.css.map
+*.js.map
+*.tmp-browserify*
+desktop.ini
+.DS_Store
