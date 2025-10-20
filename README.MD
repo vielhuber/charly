@@ -4,13 +4,24 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ## requirements
 
-- node (>= 22.0)
-- python (>= 3.0)
-- php (>=8.0)
+- node (`>= 22.0`)
+- python (`>= 3.0`)
+- php (`>=8.0`)
 
-## setup
+## usage
 
-### installation
+### server
+
+- `uvicorn server.mcp:app --host 0.0.0.0 --port 8000`
+- `cloudflared tunnel run --url http://localhost:8000 TUNNEL`
+
+### client
+
+- `https://your-client-tld.local`
+
+## installation
+
+### setup
 
 - `git clone git@github.com:vielhuber/charly.git .`
 - `cp config.example config.json`
@@ -27,7 +38,7 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ### cloudflare
 
-- [https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/create-local-tunnel/](https://developers.cloudflare.com)
+- [https://developers.cloudflare.com](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/create-local-tunnel/)
 
 ### auth0
 
@@ -81,14 +92,3 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
     - test:
         - windows: `http://127.0.0.1:12306/mcp`
         - wsl: `http://192.168.0.2:12306/mcp` (local ip from `ipconfig`)
-
-## usage
-
-### server
-
-- `uvicorn server.mcp:app --host 0.0.0.0 --port 8000`
-- `cloudflared tunnel run --url http://localhost:8000 TUNNEL`
-
-### client
-
-- `https://your-client-tld.local`
