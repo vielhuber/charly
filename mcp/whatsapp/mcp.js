@@ -6,8 +6,16 @@ import QRCode from 'qrcode';
 import P from 'pino';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import fs from 'fs';
 
-// Create an MCP server
+const __dirname__ = dirname(fileURLToPath(import.meta.url));
+
+function log(...args) {
+    let stream = fs.createWriteStream(__dirname__ + '/mcp.log', { flags: 'a' });
+    let message = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg)).join(' ');
+    stream.write(`${new Date().toISOString()} - ${message}\n`);
+}
+
 let server = new McpServer({
     name: 'whatsapp-mcp',
     version: '1.0.0'
@@ -22,6 +30,7 @@ server.registerTool(
         inputSchema: { group: z.string(), text: z.string() }
     },
     async ({ group, text }) => {
+        log([group, text]);
         let response = await sendMessage(group, text);
         return response;
     }
@@ -29,9 +38,7 @@ server.registerTool(
 
 function sendMessage(group = null, message = null) {
     return new Promise(async (resolve, reject) => {
-        let { state, saveCreds } = await useMultiFileAuthState(
-            dirname(fileURLToPath(import.meta.url)) + '/auth_info_baileys'
-        );
+        let { state, saveCreds } = await useMultiFileAuthState(__dirname__ + '/auth_info_baileys');
         let sock = makeWASocket({
             auth: state,
             logger: P(
@@ -44,6 +51,7 @@ function sendMessage(group = null, message = null) {
         sock.ev.on('creds.update', saveCreds);
         sock.ev.on('connection.update', async update => {
             let { connection, lastDisconnect, qr } = update;
+            //console.log(connection);
             if (qr) {
                 if (!isCli) {
                     resolve({ content: [{ type: 'text', text: 'QR Code muss gescannt werden. node mcp.js --cli' }] });
@@ -56,7 +64,14 @@ function sendMessage(group = null, message = null) {
                     let statusCode = lastDisconnect?.error?.output?.statusCode;
                     // reconnect after pairing (needed!)
                     if (statusCode === 515) {
-                        resolve(await sendMessage());
+                        resolve(await sendMessage(group, message));
+                        return;
+                    } else if (statusCode === 401) {
+                        if (fs.existsSync(__dirname__ + '/auth_info_baileys')) {
+                            fs.rmSync(__dirname__ + '/auth_info_baileys', { recursive: true, force: true });
+                            console.log('reset authentication. try again!');
+                        }
+                        resolve(await sendMessage(group, message));
                         return;
                     } else {
                         resolve();
@@ -64,16 +79,17 @@ function sendMessage(group = null, message = null) {
                     }
                 }
 
-                if (isCli === true && connection === 'open') {
-                    console.log('Authentifizierung bereits erfolgreich.');
-                    let response = await sock.groupFetchAllParticipating();
-                    resolve(response);
-                    return;
-                }
-
-                if (isCli === false && connection === 'open') {
+                if (connection === 'open') {
                     // send message to group
                     let response = await sock.groupFetchAllParticipating();
+                    //console.log(response);
+
+                    if (message === null || group === null) {
+                        console.log('auth already done.');
+                        resolve(response);
+                        return;
+                    }
+
                     let msgResponse = null;
                     for (let response__value of Object.values(response)) {
                         if (response__value.subject === group) {
