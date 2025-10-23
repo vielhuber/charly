@@ -77,7 +77,7 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ### js
 
-- [https://github.com/modelcontextprotocol/typescript-sdk#stdio](https://github.com/modelcontextprotocol/typescript-sdk#stdio)
+- [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
 - use with `stdio`
 
 ### filesystem
