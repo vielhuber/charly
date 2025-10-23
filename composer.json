@@ -1,6 +1,6 @@
 {
     "require": {
-        "php-mcp/server": "^3.3",
-        "monolog/monolog": "^3.9"
+        "vielhuber/aihelper": "*",
+        "vielhuber/dbhelper": "*"
     }
 }

@@ -68,14 +68,31 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
     - mcp inspector: add custom headers: `Authorization: Bearer xxx`
     - claude api / chatgpt api: `"authorization_token": "xxx"`
 
-### chrome
+## recommended mcp servers
+
+### php
+
+- [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
+- use with `stdio`
+
+### js
+
+- [https://github.com/modelcontextprotocol/typescript-sdk#stdio](https://github.com/modelcontextprotocol/typescript-sdk#stdio)
+- use with `stdio`
+
+### filesystem
+
+- [https://github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)
+- use with `docker`
+
+### browser
+
+- [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
+- use with `streamable-http`
 
 - add fresh chrome profile
-- download chrome extension from https://github.com/hangwin/mcp-chrome
-- unzip e.g. in `~/`
-- `chrome://extensions/`
-- load unpacked extension
-- choose folder
+- unzip downloaded extension in `~/`
+- open `chrome://extensions/` > load unpacked extension > choose folder
 - windows (not wsl)
     - `npm install -g mcp-chrome-bridge`
     - `mcp-chrome-bridge register`
