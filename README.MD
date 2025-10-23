@@ -90,6 +90,8 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 - [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
 - use with `streamable-http`
 
+#### notes
+
 - add fresh chrome profile
 - unzip downloaded extension in `~/`
 - open `chrome://extensions/` > load unpacked extension > choose folder
