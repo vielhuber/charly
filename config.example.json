@@ -18,7 +18,7 @@
             "type": "stdio",
             "auth": "oauth2",
             "config": {
-                "command": "/usr/bin/php",
+                "command": "/usr/bin/php8.3",
                 "args": ["/var/www/charly/mcp/php/mcp.php"]
             }
         },
