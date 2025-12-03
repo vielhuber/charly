@@ -63,6 +63,8 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
     - copy `Domain`, `Client ID` and `Client Secret`
 - test
     - create token `xxx` (e.g. via curl) to authorize with bearer token
+    - mcp inspector: add custom headers: `Authorization: Bearer xxx`
+    - claude api / chatgpt api / openai playground: `"authorization_token": "xxx"`
 
 ```
 curl \
@@ -80,27 +82,16 @@ curl \
     | jq -r '.access_token' | xclip -selection clipboard
 ```
 
-    - mcp inspector: add custom headers: `Authorization: Bearer xxx`
-    - claude api / chatgpt api / openai playground: `"authorization_token": "xxx"`
-
 ## recommended mcp servers
-
-### php
-
-- [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
-- use with `stdio`
-
-### js
-
-- [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
-- use with `stdio`
 
 ### filesystem
 
 - [https://github.com/mark3labs/mcp-filesystem-server](https://github.com/mark3labs/mcp-filesystem-server)
 - use with `stdio`
+- installation
+    - `go install github.com/mark3labs/mcp-filesystem-server@latest`
 
-## word
+### word
 
 - [https://github.com/GongRzhe/Office-Word-MCP-Server](https://github.com/GongRzhe/Office-Word-MCP-Server)
 - use with `stdio`
@@ -109,12 +100,12 @@ curl \
     - `cd Office-Word-MCP-Server`
     - `python setup_mcp.py (STDIO + Install from PyPI)`
 
-## email
+### email
 
 - [https://github.com/vielhuber/mailhelper](https://github.com/vielhuber/mailhelper)
 - use with `stdio`
 
-## whatsapp
+### whatsapp
 
 - [https://github.com/vielhuber/wahelper](https://github.com/vielhuber/wahelper)
 - use with `stdio`
@@ -128,7 +119,7 @@ curl \
     - `npx install @playwright/mcp@latest`
     - `npx playwright install chrome`
 
-### chrome
+### local chrome
 
 - [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
 - use with `streamable-http`
@@ -152,3 +143,19 @@ curl \
         - test:
             - windows: `http://127.0.0.1:12306/mcp`
             - wsl: `http://192.168.0.2:12306/mcp` (local ip from `ipconfig`)
+
+### custom php application
+
+- [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
+- use with `stdio`
+- installation
+    - `composer require php-mcp/server`
+
+### custom js application
+
+- [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
+- use with `stdio`
+- installation
+    - `nvm use --lts`
+    - `npm install @modelcontextprotocol/sdk`
+    - `printf '{ "type": "module" }\n' > package.json`

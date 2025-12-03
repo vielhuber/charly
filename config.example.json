@@ -14,6 +14,24 @@
     },
     "mcpServers": [
         {
+            "name": "filesystem",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/root/go/bin/mcp-filesystem-server",
+                "args": ["/var/www"]
+            }
+        },
+        {
+            "name": "word",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "uvx",
+                "args": ["--from", "word-mcp-server", "word_mcp_server"]
+            }
+        },
+        {
             "name": "email",
             "type": "stdio",
             "auth": "oauth2",
@@ -32,15 +50,6 @@
             }
         },
         {
-            "name": "filesystem",
-            "type": "stdio",
-            "auth": "oauth2",
-            "config": {
-                "command": "/root/go/bin/mcp-filesystem-server",
-                "args": ["/var/www"]
-            }
-        },
-        {
             "name": "browser",
             "type": "stdio",
             "auth": "oauth2",
@@ -55,6 +64,22 @@
             "auth": "oauth2",
             "config": {
                 "url": "http://172.24.160.1:12306/mcp"
+            }
+        },
+        {
+            "name": "custom-php-application",
+            "type": "stdio",
+            "config": {
+                "command": "/usr/bin/php8.3",
+                "args": ["/var/www/custom/application/mcp-server.php"]
+            }
+        },
+        {
+            "name": "custom-js-application",
+            "type": "stdio",
+            "config": {
+                "command": "/root/.nvm/versions/node/v22.20.0/bin/node",
+                "args": ["/var/www/custom/application/mcp-server.js"]
             }
         }
     ]
