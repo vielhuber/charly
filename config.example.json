@@ -14,12 +14,39 @@
     },
     "mcpServers": [
         {
-            "name": "php",
+            "name": "email",
             "type": "stdio",
             "auth": "oauth2",
             "config": {
-                "command": "/usr/bin/php8.3",
-                "args": ["/var/www/charly/mcp/php/mcp.php"]
+                "command": "/usr/bin/php8.1",
+                "args": ["/var/www/project/vendor/vielhuber/mailhelper/src/mcp.php"]
+            }
+        },
+        {
+            "name": "whatsapp",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/root/.nvm/versions/node/v22.20.0/bin/node",
+                "args": ["/var/www/project/node_modules/@vielhuber/wahelper/WhatsApp.js", "--mcp"]
+            }
+        },
+        {
+            "name": "filesystem",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/root/go/bin/mcp-filesystem-server",
+                "args": ["/var/www"]
+            }
+        },
+        {
+            "name": "browser",
+            "type": "stdio",
+            "auth": "oauth2",
+            "config": {
+                "command": "/root/.nvm/versions/node/v22.20.0/bin/npx",
+                "args": ["@playwright/mcp@latest", "--headless", "--isolated", "--no-sandbox"]
             }
         },
         {
@@ -28,27 +55,6 @@
             "auth": "oauth2",
             "config": {
                 "url": "http://172.24.160.1:12306/mcp"
-            }
-        },
-        {
-            "name": "filesystem",
-            "type": "stdio",
-            "auth": "oauth2",
-            "config": {
-                "command": "/root/.nvm/versions/node/v23.5.0/bin/node",
-                "args": [
-                    "/var/www/charly/mcp/filesystem/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
-                    "/var/www"
-                ]
-            }
-        },
-        {
-            "name": "whatsapp",
-            "type": "stdio",
-            "auth": "oauth2",
-            "config": {
-                "command": "/root/.nvm/versions/node/v23.5.0/bin/node",
-                "args": ["/var/www/nebro/wp-content/themes/nebro/_mcp/js/mcp.js"]
             }
         }
     ]

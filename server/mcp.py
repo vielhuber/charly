@@ -27,11 +27,11 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     filename="mcp_debug.log",
 )
-#logger = logging.getLogger("mcp_debug")
+# logger = logging.getLogger("mcp_debug")
 for name in [
     "mcp.server.lowlevel.server",
     "mcp.server.streamable_http",
-    "mcp.server.logging",          # Remote-Logs (window/logMessage Events)
+    "mcp.server.logging",  # Remote-Logs (window/logMessage Events)
     "mcp.client.streamable_http",
     "httpx",
     "httpcore",
@@ -77,7 +77,7 @@ auth_bearer = JWTVerifier(
 # base app (because some clients fall back to the root path for oauth)
 base = FastMCP(name="global auth", auth=auth_oauth2)
 base_app = base.http_app(path="/mcp")
-#base_app.middleware("http")(simple_log_requests)
+# base_app.middleware("http")(simple_log_requests)
 
 mcps = {"clients": {}, "apps": {}, "api_apps": {}}
 for idx, server_config in enumerate(config["MCP_SERVERS"]):
@@ -101,8 +101,8 @@ for idx, server_config in enumerate(config["MCP_SERVERS"]):
 
     # TODO: chatgpt playground has problems here
     stateless_http = True
-    if server_config["name"] == "filesystem":
-        stateless_http = False
+    # if server_config["name"] == "filesystem":
+    #    stateless_http = False
 
     mcps["apps"][id] = FastMCP.as_proxy(
         mcps["clients"][id],
@@ -110,7 +110,7 @@ for idx, server_config in enumerate(config["MCP_SERVERS"]):
         stateless_http=stateless_http,
         auth=auth_oauth2,
     ).http_app(path="/mcp")
-    #mcps["apps"][id].middleware("http")(simple_log_requests)
+    # mcps["apps"][id].middleware("http")(simple_log_requests)
     mcps["api_apps"][id] = FastMCP.as_proxy(
         mcps["clients"][id],
         name=server_config["name"],
@@ -142,22 +142,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # send different response codes for delete / terminate requests
 @app.delete("/{mcp_id}/mcp")
 def end_session(mcp_id: str):
     return Response(status_code=204)
 
+
 # claude.ai sends too many requests; only do one after another
 request_lock = asyncio.Semaphore(1)
+
+
 @app.middleware("http")
 async def throttle_requests(request: Request, call_next):
     # nur Lock für MCP-Endpunkte
-    if not request.url.path.startswith("/auth") and not request.url.path.startswith("/.well-known"):
+    if not request.url.path.startswith("/auth") and not request.url.path.startswith(
+        "/.well-known"
+    ):
         print("awaiting lock")
         async with request_lock:
             print("pass")
             return await call_next(request)
     return await call_next(request)
+
 
 # fix oauth discovery of chatgpt/claude
 @app.get("/.well-known/oauth-protected-resource")
@@ -181,6 +188,7 @@ async def oauth_protected_resource(request: Request, mcp_id: Optional[str] = Non
             "Expires": "0",
         },
     )
+
 
 @app.get("/.well-known/oauth-authorization-server")
 @app.get("/.well-known/oauth-authorization-server/{suffix}")

@@ -6,7 +6,7 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 - node (`>= 22.0`)
 - python (`>= 3.0`)
-- php (`>=8.0`)
+- php (`>=8.1`)
 
 ## usage
 
@@ -38,13 +38,11 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ### cloudflare
 
-- [https://developers.cloudflare.com](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/create-local-tunnel/)
+- [https://developers.cloudflare.com/.../create-local-tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/local-management/create-local-tunnel/)
 
 ### auth0
 
 - register/login on https://auth0.com
-- applications > apis
-    - copy `api audience`
 - user management > create user
 
 #### browser
@@ -54,7 +52,7 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
     - allowed callback urls: `https://*.ngrok-free.app/auth/auth/callback,https://your-custom-domain.com/auth/auth/callback`
     - copy `Client ID` and `Client Secret`
 - test
-    - chatgpt.com / claude.ai / chatgpt playground: login via browser
+    - chatgpt.com / claude.ai: login via browser
     - mcp inspector: start oauth flow or simply click "connect" (the browser redirects); remove "add custom headers"!
 
 #### api
@@ -62,11 +60,28 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 - applications > applications > create application
     - type: `Machine to Machine Applications`
     - api: auth0 management api > permissions: all
-    - copy `Client ID` and `Client Secret`
+    - copy `Domain`, `Client ID` and `Client Secret`
 - test
     - create token `xxx` (e.g. via curl) to authorize with bearer token
+
+```
+curl \
+    -s -X POST \
+    https://%YOUR_API_DOMAIN%/oauth/token \
+    -H "Content-Type: application/json" \
+    -d '
+        {
+            "client_id":"%YOUR_CLIENT_ID%",
+            "client_secret":"%YOUR_CLIENT_SECRET%",
+            "audience":"%YOUR_API_DOMAIN%/api/v2/",
+            "grant_type":"client_credentials"
+        }
+    ' \
+    | jq -r '.access_token' | xclip -selection clipboard
+```
+
     - mcp inspector: add custom headers: `Authorization: Bearer xxx`
-    - claude api / chatgpt api: `"authorization_token": "xxx"`
+    - claude api / chatgpt api / openai playground: `"authorization_token": "xxx"`
 
 ## recommended mcp servers
 
@@ -82,32 +97,58 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ### filesystem
 
-- [https://github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem)
-- use with `docker`
+- [https://github.com/mark3labs/mcp-filesystem-server](https://github.com/mark3labs/mcp-filesystem-server)
+- use with `stdio`
+
+## word
+
+- [https://github.com/GongRzhe/Office-Word-MCP-Server](https://github.com/GongRzhe/Office-Word-MCP-Server)
+- use with `stdio`
+- installation
+    - `git clone https://github.com/GongRzhe/Office-Word-MCP-Server.git`
+    - `cd Office-Word-MCP-Server`
+    - `python setup_mcp.py (STDIO + Install from PyPI)`
+
+## email
+
+- [https://github.com/vielhuber/mailhelper](https://github.com/vielhuber/mailhelper)
+- use with `stdio`
+
+## whatsapp
+
+- [https://github.com/vielhuber/wahelper](https://github.com/vielhuber/wahelper)
+- use with `stdio`
 
 ### browser
 
+- [https://github.com/microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp)
+- use with `stdio`
+- installation
+    - `nvm use --lts`
+    - `npx install @playwright/mcp@latest`
+    - `npx playwright install chrome`
+
+### chrome
+
 - [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
 - use with `streamable-http`
-
-#### notes
-
-- add fresh chrome profile
-- unzip downloaded extension in `~/`
-- open `chrome://extensions/` > load unpacked extension > choose folder
-- windows (not wsl)
-    - `npm install -g mcp-chrome-bridge`
-    - `mcp-chrome-bridge register`
-- start server in chrome extension
-- wsl
-    - cmd (admin):
-        - `netsh interface portproxy show v4tov4`
-        - `netsh interface portproxy delete v4tov4 listenaddress=192.168.0.2 listenport=12306`
-        - `netsh interface portproxy add v4tov4 listenaddress=192.168.0.2 listenport=12306 connectaddress=127.0.0.1 connectport=12306`
-        - if these rules are available but don't work
-            - `net stop iphlpsvc && net start iphlpsvc`
-    - powershell (admin):
-        - `New-NetFirewallRule -DisplayName "chrome-mcp" -Direction Inbound -LocalPort 12306 -Action Allow -Protocol TCP`
-    - test:
-        - windows: `http://127.0.0.1:12306/mcp`
-        - wsl: `http://192.168.0.2:12306/mcp` (local ip from `ipconfig`)
+- installation
+    - add fresh chrome profile
+    - unzip downloaded extension in `~/`
+    - open `chrome://extensions/` > load unpacked extension > choose folder
+    - windows (not wsl)
+        - `npm install -g mcp-chrome-bridge`
+        - `mcp-chrome-bridge register`
+    - start server in chrome extension
+    - wsl
+        - cmd (admin):
+            - `netsh interface portproxy show v4tov4`
+            - `netsh interface portproxy delete v4tov4 listenaddress=192.168.0.2 listenport=12306`
+            - `netsh interface portproxy add v4tov4 listenaddress=192.168.0.2 listenport=12306 connectaddress=127.0.0.1 connectport=12306`
+            - if these rules are available but don't work
+                - `net stop iphlpsvc && net start iphlpsvc`
+        - powershell (admin):
+            - `New-NetFirewallRule -DisplayName "chrome-mcp" -Direction Inbound -LocalPort 12306 -Action Allow -Protocol TCP`
+        - test:
+            - windows: `http://127.0.0.1:12306/mcp`
+            - wsl: `http://192.168.0.2:12306/mcp` (local ip from `ipconfig`)
