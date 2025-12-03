@@ -59,7 +59,7 @@
             }
         },
         {
-            "name": "chrome",
+            "name": "local-chrome",
             "type": "http",
             "auth": "oauth2",
             "config": {
