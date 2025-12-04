@@ -172,9 +172,12 @@ for example configurations of the following servers, see [config.example.json](c
     - [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
 - installation
     - `composer require php-mcp/server`
+    - `composer require monolog/monolog`
 - boilerplate
 
 ```php
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
 use Monolog\Logger;
 use Monolog\Level;
 use Monolog\Handler\StreamHandler;
@@ -185,7 +188,7 @@ try {
         ->withServerInfo('MCP Server', '1.0.0')
         ->withLogger((new Logger('mcp'))->pushHandler(new StreamHandler(__DIR__ . '/mcp-server.log', Level::Debug)))
         ->build();
-    $server->discover(basePath: '/var/path/to/base/dir', scanDirs: ['.']);
+    $server->discover(basePath: __DIR__, scanDirs: ['.']);
     $server->listen(new StdioServerTransport());
 } catch (\Throwable $e) {
     fwrite(STDERR, '[CRITICAL ERROR] ' . $e->getMessage() . "\n");
