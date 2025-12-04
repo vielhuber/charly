@@ -84,17 +84,19 @@ curl \
 
 ## recommended mcp servers
 
+for example configurations of the following servers, see [config.example.json](config.example.json).
+
 ### filesystem
 
-- [https://github.com/mark3labs/mcp-filesystem-server](https://github.com/mark3labs/mcp-filesystem-server)
-- use with `stdio`
+- **mcp-filesystem-server**
+    - [https://github.com/mark3labs/mcp-filesystem-server](https://github.com/mark3labs/mcp-filesystem-server)
 - installation
     - `go install github.com/mark3labs/mcp-filesystem-server@latest`
 
 ### word
 
-- [https://github.com/GongRzhe/Office-Word-MCP-Server](https://github.com/GongRzhe/Office-Word-MCP-Server)
-- use with `stdio`
+- **Office-Word-MCP-Server**
+    - [https://github.com/GongRzhe/Office-Word-MCP-Server](https://github.com/GongRzhe/Office-Word-MCP-Server)
 - installation
     - `git clone https://github.com/GongRzhe/Office-Word-MCP-Server.git`
     - `cd Office-Word-MCP-Server`
@@ -102,18 +104,18 @@ curl \
 
 ### email
 
-- [https://github.com/vielhuber/mailhelper](https://github.com/vielhuber/mailhelper)
-- use with `stdio`
+- **mailhelper**
+    - [https://github.com/vielhuber/mailhelper](https://github.com/vielhuber/mailhelper)
 
 ### whatsapp
 
-- [https://github.com/vielhuber/wahelper](https://github.com/vielhuber/wahelper)
-- use with `stdio`
+- **wahelper**
+    - [https://github.com/vielhuber/wahelper](https://github.com/vielhuber/wahelper)
 
 ### browser
 
-- [https://github.com/microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp)
-- use with `stdio`
+- **playwright**
+    - [https://github.com/microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp)
 - installation
     - `nvm use --lts`
     - `npx install @playwright/mcp@latest`
@@ -121,8 +123,8 @@ curl \
 
 ### local chrome
 
-- [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
-- use with `streamable-http`
+- **mcp-chrome**
+    - [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
 - installation
     - add fresh chrome profile
     - unzip downloaded extension in `~/`
@@ -146,15 +148,15 @@ curl \
 
 ### custom php application
 
-- [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
-- use with `stdio`
+- **php-mcp**
+    - [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
 - installation
     - `composer require php-mcp/server`
 
 ### custom js application
 
-- [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
-- use with `stdio`
+- **typescript-sdk**
+    - [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
 - installation
     - `nvm use --lts`
     - `npm install @modelcontextprotocol/sdk`
