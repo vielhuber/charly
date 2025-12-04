@@ -88,7 +88,9 @@ for example configurations of the following servers, see [config.example.json](c
 
 ### filesystem
 
-- **mcp-filesystem-server**
+**mcp-filesystem-server**
+
+- url
     - [https://github.com/mark3labs/mcp-filesystem-server](https://github.com/mark3labs/mcp-filesystem-server)
 - installation
     - `go install github.com/mark3labs/mcp-filesystem-server@latest`
@@ -96,6 +98,7 @@ for example configurations of the following servers, see [config.example.json](c
 ### word
 
 - **Office-Word-MCP-Server**
+- url
     - [https://github.com/GongRzhe/Office-Word-MCP-Server](https://github.com/GongRzhe/Office-Word-MCP-Server)
 - installation
     - `git clone https://github.com/GongRzhe/Office-Word-MCP-Server.git`
@@ -104,17 +107,23 @@ for example configurations of the following servers, see [config.example.json](c
 
 ### email
 
-- **mailhelper**
+**mailhelper**
+
+- url
     - [https://github.com/vielhuber/mailhelper](https://github.com/vielhuber/mailhelper)
 
 ### whatsapp
 
-- **wahelper**
+**wahelper**
+
+- url
     - [https://github.com/vielhuber/wahelper](https://github.com/vielhuber/wahelper)
 
 ### browser
 
-- **playwright**
+**playwright**
+
+- url
     - [https://github.com/microsoft/playwright-mcp](https://github.com/microsoft/playwright-mcp)
 - installation
     - `nvm use --lts`
@@ -123,7 +132,9 @@ for example configurations of the following servers, see [config.example.json](c
 
 ### local chrome
 
-- **mcp-chrome**
+**mcp-chrome**
+
+- url
     - [https://github.com/hangwin/mcp-chrome](https://github.com/hangwin/mcp-chrome)
 - installation
     - add fresh chrome profile
@@ -148,14 +159,38 @@ for example configurations of the following servers, see [config.example.json](c
 
 ### custom php application
 
-- **php-mcp**
+**php-mcp**
+
+- url
     - [https://github.com/php-mcp/server](https://github.com/php-mcp/server)
 - installation
     - `composer require php-mcp/server`
+- boilerplate
+
+```php
+use Monolog\Logger;
+use Monolog\Level;
+use Monolog\Handler\StreamHandler;
+use PhpMcp\Server\Server;
+use PhpMcp\Server\Transports\StdioServerTransport;
+try {
+    $server = Server::make()
+        ->withServerInfo('MCP Server', '1.0.0')
+        ->withLogger((new Logger('mcp'))->pushHandler(new StreamHandler(__DIR__ . '/mcp-server.log', Level::Debug)))
+        ->build();
+    $server->discover(basePath: '/var/path/to/base/dir', scanDirs: ['.']);
+    $server->listen(new StdioServerTransport());
+} catch (\Throwable $e) {
+    fwrite(STDERR, '[CRITICAL ERROR] ' . $e->getMessage() . "\n");
+    die();
+}
+```
 
 ### custom js application
 
-- **typescript-sdk**
+**typescript-sdk**
+
+- url
     - [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk)
 - installation
     - `nvm use --lts`
