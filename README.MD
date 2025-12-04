@@ -7,6 +7,7 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 - node (`>= 22.0`)
 - python (`>= 3.0`)
 - php (`>=8.1`)
+- go (`>=1.22`)
 
 ## usage
 
@@ -97,7 +98,8 @@ for example configurations of the following servers, see [config.example.json](c
 
 ### word
 
-- **Office-Word-MCP-Server**
+**Office-Word-MCP-Server**
+
 - url
     - [https://github.com/GongRzhe/Office-Word-MCP-Server](https://github.com/GongRzhe/Office-Word-MCP-Server)
 - installation
@@ -111,6 +113,8 @@ for example configurations of the following servers, see [config.example.json](c
 
 - url
     - [https://github.com/vielhuber/mailhelper](https://github.com/vielhuber/mailhelper)
+- installation
+    - `composer require vielhuber/mailhelper`
 
 ### whatsapp
 
@@ -118,6 +122,9 @@ for example configurations of the following servers, see [config.example.json](c
 
 - url
     - [https://github.com/vielhuber/wahelper](https://github.com/vielhuber/wahelper)
+- installation
+    - `npm install @vielhuber/wahelper`
+    - `composer require vielhuber/wahelper`
 
 ### browser
 
