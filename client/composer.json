@@ -2,6 +2,13 @@
     "require": {
         "vielhuber/aihelper": "*",
         "vielhuber/dbhelper": "*",
-        "vielhuber/simpleauth": "*"
+        "vielhuber/simpleauth": "*",
+        "firebase/php-jwt": "^6.11",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Api\\": "_php/api/"
+        }
     }
 }
