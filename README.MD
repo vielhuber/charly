@@ -35,8 +35,9 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 **client**
 
 - `cd client`
-- `mysql -u root -p -e "CREATE DATABASE charly CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"`
 - `cp .env.example .env`
+- `php auth/index.php migrate`
+- `php auth/index.php create "david@vielhuber.de" "secret"`
 - setup vhost (apache/nginx with ssl) that points to `/client/_public`
 
 ### update
