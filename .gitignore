@@ -1,10 +1,10 @@
 *.log
-/node_modules
-/vendor
-/config.json
-/package-lock.json
-/composer.lock
-/venv
+node_modules/
+vendor/
+config.json
+package-lock.json
+composer.lock
+venv
 auth_info_baileys
 __pycache__
 .idea/

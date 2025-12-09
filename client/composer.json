@@ -1,0 +1,7 @@
+{
+    "require": {
+        "vielhuber/aihelper": "*",
+        "vielhuber/dbhelper": "*",
+        "vielhuber/simpleauth": "*"
+    }
+}

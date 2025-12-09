@@ -2,9 +2,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
-        outDir: 'client/_public',
+        outDir: '_public',
         rollupOptions: {
-            input: './client/_js/script.js',
+            input: './_js/script.js',
             output: {
                 entryFileNames: 'bundle.js',
                 format: 'iife',

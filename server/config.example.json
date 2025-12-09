@@ -37,7 +37,7 @@
             "auth": "oauth2",
             "config": {
                 "command": "/usr/bin/php8.1",
-                "args": ["/var/www/project/vendor/vielhuber/mailhelper/src/mcp.php"]
+                "args": ["/var/www/project/vendor/vielhuber/mailhelper/src/mcp-server.php"]
             }
         },
         {
@@ -45,8 +45,8 @@
             "type": "stdio",
             "auth": "oauth2",
             "config": {
-                "command": "/root/.nvm/versions/node/v22.20.0/bin/node",
-                "args": ["/var/www/project/node_modules/@vielhuber/wahelper/WhatsApp.js", "--mcp"]
+                "command": "/usr/bin/php8.3",
+                "args": ["/var/www/project/vendor/vielhuber/wahelper/mcp-server.php"]
             }
         },
         {

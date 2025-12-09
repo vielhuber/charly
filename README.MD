@@ -4,10 +4,9 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ## requirements
 
-- node (`>= 22.0`)
 - python (`>= 3.0`)
 - php (`>=8.1`)
-- go (`>=1.22`)
+- mysql (`>=8.0`)
 
 ## usage
 
@@ -18,19 +17,26 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 ### client
 
-- `https://your-client-tld.local`
+- open `https://your-client-tld.local`
 
 ## installation
 
 ### setup
 
 - `git clone git@github.com:vielhuber/charly.git .`
-- `cp config.example config.json`
+
+**server**
+
+- `cd server`
 - `vi config.json`
-- `composer install`
-- `npm install`
 - `python -m venv venv`
 - `pip install -r requirements.txt`
+
+**client**
+
+- `cd client`
+- `mysql -u root -p -e "CREATE DATABASE charly CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"`
+- `cp .env.example .env`
 - setup vhost (apache/nginx with ssl) that points to `/client/_public`
 
 ### update
