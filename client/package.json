@@ -3,7 +3,7 @@
         "🔽 css 🔽": "",
         "css": "npm-run-all --print-label --silent --sequential css:sass css:postcss:tailwind css:postcss:autoprefixer",
         "css:dev": "npm-run-all --print-label --silent --sequential css:sass:dev css:postcss:tailwind",
-        "css:watch": "onchange './_html/**/*.html' './_scss/**/*.scss' './**/*.php' --initial --poll 25 --delay 0 --await-write-finish 25 -- onerror \"echo \\\"⏳ css:dev\\\" && npm run css:dev\" --title \"css:watch\" --message \"build failed\" --sound mute",
+        "css:watch": "onchange './_html/**/*.html' './_scss/**/*.scss' './_php/**/*.php' --initial --poll 25 --delay 0 --await-write-finish 25 -- onerror \"echo \\\"⏳ css:dev\\\" && npm run css:dev\" --title \"css:watch\" --message \"build failed\" --sound mute",
         "css:sass": "echo \"⏳\" && sass --style compressed --no-source-map ./_scss/style.scss ./$npm_package_config_build_folder/bundle.css && echo \"✅\"",
         "css:sass:dev": "echo \"⏳\" && sass ./_scss/style.scss ./$npm_package_config_build_folder/bundle.css && echo \"✅\"",
         "css:postcss:autoprefixer": "echo \"⏳\" && postcss --use autoprefixer --no-map --output ./$npm_package_config_build_folder/bundle.css ./$npm_package_config_build_folder/bundle.css && echo \"✅\"",

@@ -5,13 +5,12 @@ export default class Chats {
     route = '/chats';
 
     async init() {
+        this.$content = document.querySelector('.content');
         await this.buildHtml();
         this.bindLinks();
     }
 
     async buildHtml() {
-        document.querySelector('.content').innerHTML = 'CHATS!!';
-
         let response = await Helper.fetch('/api/chats', {
             method: 'GET'
         });
@@ -34,20 +33,38 @@ export default class Chats {
         html += '</ul>';
         html += '<div class="chat-content">...</div>';
 
-        document.querySelector('.content').innerHTML = html;
+        html += '<form method="post" action="/api/chats">';
+        html += '<input type="text" required="required" name="name" value="" placeholder="Name..." />';
+        html += '<button type="submit">Create Chat</button>';
+        html += '</form>';
 
-        if (new RegExp(this.route + '/\\d+$').test(window.location.pathname) !== false) {
+        this.$content.innerHTML = html;
+
+        if (new RegExp(this.route + '/(.+)$').test(window.location.pathname) !== false) {
             this.loadChatDetail();
         }
     }
 
     bindLinks() {
-        document.querySelectorAll('.content .chat-link').forEach($el => {
+        this.$content.querySelectorAll('.chat-link').forEach($el => {
             $el.addEventListener('click', async e => {
                 e.preventDefault();
                 window.history.pushState({}, '', e.target.closest('.chat-link').getAttribute('href'));
                 this.loadChatDetail();
             });
+        });
+        let $form = this.$content.querySelector('form');
+        $form.addEventListener('submit', async e => {
+            e.preventDefault();
+            let response = await Helper.fetch($form.getAttribute('action'), {
+                method: $form.getAttribute('method'),
+                body: new URLSearchParams(new FormData($form))
+            });
+            if (response.success === true) {
+                $form.reset();
+                window.history.pushState({}, '', '/chats/' + response.data.chat_id);
+                this.init();
+            }
         });
     }
 

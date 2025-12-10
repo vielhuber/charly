@@ -6,18 +6,20 @@ export default class Helper {
             args.cache = 'no-cache';
         }
         if (args.headers === undefined) {
-            args.headers = { 'Content-Type': 'application/json' };
+            args.headers = {};
+        }
+        if (args.method === undefined) {
+            args.method = 'GET';
+        }
+        if (args.method === 'POST' && args.headers['Content-Type'] === undefined) {
+            args.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
         return new Promise(resolve => {
             Store.api
                 .fetch(url, args)
                 .then(response => {
-                    let data = response.json(),
-                        status = response.status;
-                    if (status == 200 || status == 304) {
-                        return data;
-                    }
-                    return { success: false, message: status };
+                    let data = response.json();
+                    return data;
                 })
                 .catch(error => {
                     return { success: false, message: error };

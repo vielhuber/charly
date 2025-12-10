@@ -3,12 +3,14 @@ namespace Api;
 
 class Helpers
 {
-    static function response($data, $code = 200)
+    static function response($success = true, $message = null, $public_message = null, $data = null, $status_code = 200)
     {
-        http_response_code($code);
+        http_response_code($status_code);
         header('Content-Type: application/json');
         echo json_encode([
-            'success' => true,
+            'success' => $success,
+            'message' => $message,
+            'public_message' => $public_message,
             'data' => $data
         ]);
         die();

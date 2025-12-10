@@ -3,9 +3,11 @@ namespace Api;
 
 class ChatDetail
 {
-    function init($id)
+    function index($id)
     {
-        $chat = ['id' => $id];
-        Helpers::response($chat);
+        $chat = Store::$db->fetch_row('SELECT * FROM chats WHERE id = ?', $id);
+
+        $data = $chat;
+        Helpers::response(data: $data);
     }
 }

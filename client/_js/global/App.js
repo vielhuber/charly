@@ -3,7 +3,7 @@ import jwtbutler from 'jwtbutler';
 import Home from '../routes/Home';
 import Chats from '../routes/Chats';
 import Tasks from '../routes/Tasks';
-import Prompts from '../routes/Prompts';
+import Knowledge from '../routes/Knowledge';
 import Skills from '../routes/Skills';
 import Store from './Store';
 
@@ -30,7 +30,7 @@ export default class App {
                 <a href="/" class="nav-link">Home</a>
                 <a href="/chats" class="nav-link">Chats</a>
                 <a href="/tasks" class="nav-link">Tasks</a>
-                <a href="/prompts" class="nav-link">Prompts</a>
+                <a href="/knowledge" class="nav-link">Knowledge</a>
                 <a href="/skills" class="nav-link">Skills</a>
                 <a href="#" class="logout">Logout</a>
             </div>
@@ -76,9 +76,9 @@ export default class App {
 
     async loadContent() {
         // clear content
-        document.querySelector('.content').innerHTML = '';
+        document.querySelector('.content').innerHTML = '...';
         // call specific js file
-        for (let classes__value of [Home, Chats, Tasks, Prompts, Skills]) {
+        for (let classes__value of [Home, Chats, Tasks, Knowledge, Skills]) {
             let c = new classes__value();
             if (new RegExp(c.route).test(window.location.pathname) === false) {
                 continue;

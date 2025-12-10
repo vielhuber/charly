@@ -62,16 +62,16 @@ async def simple_log_requests(request: Request, call_next):
 
 # authentication
 auth_oauth2 = Auth0Provider(
-    config_url=f"{config["AUTH0"]["URL"]}/.well-known/openid-configuration",
-    client_id=config["AUTH0"]["CLIENT_ID"],
-    client_secret=config["AUTH0"]["CLIENT_SECRET"],
-    audience=f"{config["AUTH0"]["URL"]}/api/v2/",
-    base_url=f"{config["BASE_URL"]}/auth",
+    config_url=f"{config["auth0"]["URL"]}/.well-known/openid-configuration",
+    client_id=config["auth0"]["CLIENT_ID"],
+    client_secret=config["auth0"]["CLIENT_SECRET"],
+    audience=f"{config["auth0"]["URL"]}/api/v2/",
+    base_url=f"{config["auth0"]["BASE_URL"]}/auth",
 )
 auth_bearer = JWTVerifier(
-    jwks_uri=f"{config["AUTH0"]["URL"]}/.well-known/jwks.json",
-    issuer=f"{config["AUTH0"]["URL"]}/",
-    audience=f"{config["AUTH0"]["URL"]}/api/v2/",
+    jwks_uri=f"{config["auth0"]["URL"]}/.well-known/jwks.json",
+    issuer=f"{config["auth0"]["URL"]}/",
+    audience=f"{config["auth0"]["URL"]}/api/v2/",
 )
 
 # base app (because some clients fall back to the root path for oauth)
@@ -80,7 +80,7 @@ base_app = base.http_app(path="/mcp")
 # base_app.middleware("http")(simple_log_requests)
 
 mcps = {"clients": {}, "apps": {}, "api_apps": {}}
-for idx, server_config in enumerate(config["MCP_SERVERS"]):
+for idx, server_config in enumerate(config["mcpServers"]):
     id = f"mcp{idx+1}"
     id = server_config["name"]
     if server_config["type"] == "stdio":
@@ -123,7 +123,7 @@ for idx, server_config in enumerate(config["MCP_SERVERS"]):
 async def lifespan(parent_app):
     async with AsyncExitStack() as stack:
         await stack.enter_async_context(base_app.lifespan(parent_app))
-        for idx, server_config in enumerate(config["MCP_SERVERS"]):
+        for idx, server_config in enumerate(config["mcpServers"]):
             id = f"mcp{idx+1}"
             id = server_config["name"]
             await stack.enter_async_context(mcps["apps"][id].lifespan(parent_app))
@@ -215,7 +215,7 @@ async def oauth_authorization_server(request: Request, suffix: Optional[str] = N
     )
 
 
-for idx, server_config in enumerate(config["MCP_SERVERS"]):
+for idx, server_config in enumerate(config["mcpServers"]):
     id = f"mcp{idx+1}"
     id = server_config["name"]
     app.mount(f"/api/{id}/mcp", mcps["api_apps"][id])

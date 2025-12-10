@@ -1,12 +1,12 @@
 import Helper from '../global/Helper';
 
-export default class Tasks {
-    route = '/tasks';
+export default class Knowledge {
+    route = '/knowledge';
 
     async init() {
         this.$content = document.querySelector('.content');
 
-        let response = await Helper.fetch('/api/tasks', {
+        let response = await Helper.fetch('/api/knowledge', {
             method: 'GET'
         });
 

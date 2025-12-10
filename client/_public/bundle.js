@@ -3513,15 +3513,18 @@
         args.cache = "no-cache";
       }
       if (args.headers === void 0) {
-        args.headers = { "Content-Type": "application/json" };
+        args.headers = {};
+      }
+      if (args.method === void 0) {
+        args.method = "GET";
+      }
+      if (args.method === "POST" && args.headers["Content-Type"] === void 0) {
+        args.headers["Content-Type"] = "application/x-www-form-urlencoded";
       }
       return new Promise((resolve) => {
         Store.api.fetch(url, args).then((response) => {
-          let data = response.json(), status = response.status;
-          if (status == 200 || status == 304) {
-            return data;
-          }
-          return { success: false, message: status };
+          let data = response.json();
+          return data;
         }).catch((error) => {
           return { success: false, message: error };
         }).then((response) => {
@@ -3533,7 +3536,6 @@
   class Home {
     route = "/$";
     async init() {
-      document.querySelector(".content").innerHTML = "HOME!!";
       let response = await Helper.fetch("/api/home", {
         method: "GET"
       });
@@ -3553,11 +3555,11 @@
   class Chats {
     route = "/chats";
     async init() {
+      this.$content = document.querySelector(".content");
       await this.buildHtml();
       this.bindLinks();
     }
     async buildHtml() {
-      document.querySelector(".content").innerHTML = "CHATS!!";
       let response = await Helper.fetch("/api/chats", {
         method: "GET"
       });
@@ -3576,18 +3578,35 @@
       });
       html2 += "</ul>";
       html2 += '<div class="chat-content">...</div>';
-      document.querySelector(".content").innerHTML = html2;
-      if (new RegExp(this.route + "/\\d+$").test(window.location.pathname) !== false) {
+      html2 += '<form method="post" action="/api/chats">';
+      html2 += '<input type="text" required="required" name="name" value="" placeholder="Name..." />';
+      html2 += '<button type="submit">Create Chat</button>';
+      html2 += "</form>";
+      this.$content.innerHTML = html2;
+      if (new RegExp(this.route + "/(.+)$").test(window.location.pathname) !== false) {
         this.loadChatDetail();
       }
     }
     bindLinks() {
-      document.querySelectorAll(".content .chat-link").forEach(($el) => {
+      this.$content.querySelectorAll(".chat-link").forEach(($el) => {
         $el.addEventListener("click", async (e) => {
           e.preventDefault();
           window.history.pushState({}, "", e.target.closest(".chat-link").getAttribute("href"));
           this.loadChatDetail();
         });
+      });
+      let $form = this.$content.querySelector("form");
+      $form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        let response = await Helper.fetch($form.getAttribute("action"), {
+          method: $form.getAttribute("method"),
+          body: new URLSearchParams(new FormData($form))
+        });
+        if (response.success === true) {
+          $form.reset();
+          window.history.pushState({}, "", "/chats/" + response.data.chat_id);
+          this.init();
+        }
       });
     }
     loadChatDetail() {
@@ -3598,19 +3617,48 @@
   class Tasks {
     route = "/tasks";
     async init() {
-      document.querySelector(".content").innerHTML = "TASKS!!";
+      this.$content = document.querySelector(".content");
+      let response = await Helper.fetch("/api/tasks", {
+        method: "GET"
+      });
+      let html2 = JSON.stringify(response.data);
+      this.$content.innerHTML = html2;
     }
   }
-  class Prompts {
-    route = "/prompts";
+  class Knowledge {
+    route = "/knowledge";
     async init() {
-      document.querySelector(".content").innerHTML = "PROMPTS!!";
+      this.$content = document.querySelector(".content");
+      let response = await Helper.fetch("/api/knowledge", {
+        method: "GET"
+      });
+      let html2 = JSON.stringify(response.data);
+      this.$content.innerHTML = html2;
     }
   }
   class Skills {
     route = "/skills";
     async init() {
-      document.querySelector(".content").innerHTML = "SKILLS!!!";
+      this.$content = document.querySelector(".content");
+      let response = await Helper.fetch("/api/skills", {
+        method: "GET"
+      });
+      if (response.success === false) {
+        console.log(response);
+        this.$content.innerHTML = response.public_message;
+        return;
+      }
+      let html2 = "";
+      html2 += "<ul>";
+      response.data.mcpServers.forEach((mcpServers__value) => {
+        html2 += `
+                <li>
+                    ${mcpServers__value.name} - ${mcpServers__value.type}
+                </li>
+            `;
+      });
+      html2 += "</ul>";
+      this.$content.innerHTML = html2;
     }
   }
   class App {
@@ -3633,7 +3681,7 @@
                 <a href="/" class="nav-link">Home</a>
                 <a href="/chats" class="nav-link">Chats</a>
                 <a href="/tasks" class="nav-link">Tasks</a>
-                <a href="/prompts" class="nav-link">Prompts</a>
+                <a href="/knowledge" class="nav-link">Knowledge</a>
                 <a href="/skills" class="nav-link">Skills</a>
                 <a href="#" class="logout">Logout</a>
             </div>
@@ -3671,8 +3719,8 @@
       await Store.api.login();
     }
     async loadContent() {
-      document.querySelector(".content").innerHTML = "";
-      for (let classes__value of [Home, Chats, Tasks, Prompts, Skills]) {
+      document.querySelector(".content").innerHTML = "...";
+      for (let classes__value of [Home, Chats, Tasks, Knowledge, Skills]) {
         let c = new classes__value();
         if (new RegExp(c.route).test(window.location.pathname) === false) {
           continue;

@@ -1,19 +1,21 @@
 <?php
 namespace Api;
 
+use vielhuber\stringhelper\__;
+
 class Chats
 {
-    function init()
+    function index()
     {
-        $chats = [];
-        for ($i = 0; $i < 100; $i++) {
-            $chats[] = [
-                'id' => $i,
-                'name' => 'Chat ' . ($i + 1),
-                'last_message' => 'This is the last message of chat ' . ($i + 1),
-                'timestamp' => date('Y-m-d H:i:s', strtotime("-$i days"))
-            ];
-        }
-        Helpers::response($chats);
+        $chats = Store::$db->fetch_all('SELECT * FROM chats ORDER BY id DESC');
+
+        $data = $chats;
+        Helpers::response(data: $data);
+    }
+
+    function create($name)
+    {
+        $chat_id = Store::$db->insert('chats', ['id' => __::uuid(version: 7), 'name' => $name]);
+        Helpers::response(data: ['chat_id' => $chat_id]);
     }
 }

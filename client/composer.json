@@ -3,6 +3,7 @@
         "vielhuber/aihelper": "*",
         "vielhuber/dbhelper": "*",
         "vielhuber/simpleauth": "*",
+        "vielhuber/stringhelper": "*",
         "firebase/php-jwt": "^6.11",
         "vlucas/phpdotenv": "^5.6"
     },

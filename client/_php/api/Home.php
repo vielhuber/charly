@@ -3,9 +3,9 @@ namespace Api;
 
 class Home
 {
-    function init()
+    function index()
     {
         $response = ['message' => 'Welcome to the API'];
-        Helpers::response($response);
+        Helpers::response(data: $response);
     }
 }
