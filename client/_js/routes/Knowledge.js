@@ -5,21 +5,24 @@ export default class Knowledge {
 
     async init() {
         this.$content = document.querySelector('.content');
+        await this.preloadData();
         await this.buildHtml();
         Helper.updateTitle('Knowledge');
     }
 
-    async buildHtml() {
-        let response = await Helper.fetch('/api/knowledge', {
+    async preloadData() {
+        this.response = await Helper.fetch('/api/knowledge', {
             method: 'GET'
         });
+    }
 
+    async buildHtml() {
         let html = '';
 
         html += '<h2>Knowledge</h2>';
 
         html += '<ul class="drag-and-drop-list">';
-        response.data.forEach(data__value => {
+        this.response.data.forEach(data__value => {
             html += `
                 <li>
                     <span class="drag-and-drop-list__handle">☰</span>

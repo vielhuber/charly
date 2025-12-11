@@ -82,7 +82,7 @@ base_app = base.http_app(path="/mcp")
 mcps = {"clients": {}, "apps": {}, "api_apps": {}}
 for idx, server_config in enumerate(config["mcpServers"]):
     id = f"mcp{idx+1}"
-    id = server_config["name"]
+    id = server_config["id"]
     if server_config["type"] == "stdio":
         mcps["clients"][id] = ProxyClient(
             transport=StdioTransport(
@@ -101,19 +101,19 @@ for idx, server_config in enumerate(config["mcpServers"]):
 
     # TODO: chatgpt playground has problems here
     stateless_http = True
-    # if server_config["name"] == "filesystem":
+    # if server_config["id"] == "filesystem":
     #    stateless_http = False
 
     mcps["apps"][id] = FastMCP.as_proxy(
         mcps["clients"][id],
-        name=server_config["name"],
+        name=server_config["id"],
         stateless_http=stateless_http,
         auth=auth_oauth2,
     ).http_app(path="/mcp")
     # mcps["apps"][id].middleware("http")(simple_log_requests)
     mcps["api_apps"][id] = FastMCP.as_proxy(
         mcps["clients"][id],
-        name=server_config["name"],
+        name=server_config["id"],
         stateless_http=stateless_http,
         auth=auth_bearer,
     ).http_app(path="/")
@@ -125,7 +125,7 @@ async def lifespan(parent_app):
         await stack.enter_async_context(base_app.lifespan(parent_app))
         for idx, server_config in enumerate(config["mcpServers"]):
             id = f"mcp{idx+1}"
-            id = server_config["name"]
+            id = server_config["id"]
             await stack.enter_async_context(mcps["apps"][id].lifespan(parent_app))
             await stack.enter_async_context(mcps["api_apps"][id].lifespan(parent_app))
         yield
@@ -217,7 +217,7 @@ async def oauth_authorization_server(request: Request, suffix: Optional[str] = N
 
 for idx, server_config in enumerate(config["mcpServers"]):
     id = f"mcp{idx+1}"
-    id = server_config["name"]
+    id = server_config["id"]
     app.mount(f"/api/{id}/mcp", mcps["api_apps"][id])
     app.mount(f"/{id}", mcps["apps"][id])
 

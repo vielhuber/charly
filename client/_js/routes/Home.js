@@ -4,15 +4,27 @@ export default class Home {
     route = '/$';
 
     async init() {
+        this.$content = document.querySelector('.content');
+        await this.preloadData();
         await this.buildHtml();
         Helper.updateTitle('Home');
     }
 
-    async buildHtml() {
-        let response = await Helper.fetch('/api/home', {
+    async preloadData() {
+        this.response = await Helper.fetch('/api/home', {
             method: 'GET'
         });
+    }
 
-        document.querySelector('.content').innerHTML = JSON.stringify(response.data);
+    async buildHtml() {
+        let html = '';
+
+        html += '<h2>Home</h2>';
+
+        html += '<img src="/logo.png" alt="Logo" />';
+
+        html += JSON.stringify(this.response.data);
+
+        this.$content.innerHTML = html;
     }
 }

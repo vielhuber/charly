@@ -2,8 +2,6 @@
 namespace Api;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use vielhuber\dbhelper\dbhelper;
 use vielhuber\stringhelper\__;
 
@@ -31,20 +29,13 @@ class Api
 
     function authenticate()
     {
-        $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../../'); // .env must be in current dir, otherwise use \Dotenv\Dotenv::createImmutable(dirname(__DIR__)) or \Dotenv\Dotenv::createImmutable('/foo/bar') etc.
-        $dotenv->load();
-
         try {
-            $user_id = JWT::decode(
-                str_replace('Bearer ', '', @$_SERVER['HTTP_AUTHORIZATION']), // access token
-                new Key(@$_SERVER['JWT_SECRET'], 'HS256') // secret key
-            )->sub;
+            $user_id = Helper::getCurrentUserId();
         } catch (\Throwable $e) {
             http_response_code(401);
             echo json_encode([
                 'success' => false,
-                'message' => 'unauthorized',
-                'public_message' => '...'
+                'message' => 'unauthorized'
             ]);
             die();
         }
@@ -87,7 +78,8 @@ class Api
         if (!Store::$db->has_table('providers')) {
             Store::$db->create_table('providers', [
                 'id' => 'VARCHAR(36) PRIMARY KEY',
-                'type' => 'VARCHAR(100)',
+                'name' => 'VARCHAR(100)',
+                'service' => 'VARCHAR(100)',
                 'api_key' => 'VARCHAR(255)'
             ]);
         }
@@ -95,7 +87,9 @@ class Api
         if (!Store::$db->has_table('tasks')) {
             Store::$db->create_table('tasks', [
                 'id' => 'VARCHAR(36) PRIMARY KEY',
-                'name' => 'VARCHAR(255)'
+                'name' => 'VARCHAR(255)',
+                'schedule' => 'VARCHAR(100)',
+                'order' => 'INT'
             ]);
         }
 
@@ -110,12 +104,15 @@ class Api
             ]);
         }
 
-        if (!Store::$db->has_table('chats_entries')) {
-            Store::$db->create_table('chats_entries', [
+        if (!Store::$db->has_table('chats_messages')) {
+            Store::$db->create_table('chats_messages', [
                 'id' => 'VARCHAR(36) PRIMARY KEY',
                 'content' => 'TEXT',
+                'timestamp' => 'BIGINT NULL',
+                'user_id' => 'VARCHAR(36) NULL',
                 'chat_id' => 'VARCHAR(36)',
-                'FOREIGN KEY (chat_id)' => 'REFERENCES chats(id) ON DELETE RESTRICT'
+                'FOREIGN KEY (user_id)' => 'REFERENCES users(id) ON DELETE RESTRICT',
+                'FOREIGN KEY (chat_id)' => 'REFERENCES chats(id) ON DELETE CASCADE'
             ]);
         }
 
@@ -145,60 +142,80 @@ class Api
             Store::$db->create_table('tasks_skills', [
                 'id' => 'VARCHAR(36) PRIMARY KEY',
                 'task_id' => 'VARCHAR(36)',
-                'name' => 'VARCHAR(255)',
+                'skill_id' => 'VARCHAR(255)',
                 'order' => 'INT',
                 'FOREIGN KEY (task_id)' => 'REFERENCES tasks(id) ON DELETE RESTRICT'
             ]);
         }
 
         if ($this->debug === true) {
-            $task_id = Store::$db->insert('tasks', [
-                'id' => __::uuid(version: 7),
-                'name' => 'Beispiel-Task #1'
-            ]);
-            $knowledge_id = Store::$db->insert('knowledge', [
-                'id' => __::uuid(version: 7),
-                'name' => 'Beispiel-Wissen #1',
-                'content' => 'Dies ist ein Beispiel-Eintrag im Wissensbereich.',
-                'order' => 1
-            ]);
-            $provider_id = Store::$db->insert('providers', [
-                'id' => __::uuid(version: 7),
-                'type' => 'chatgpt',
-                'api_key' =>
-                    'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-            ]);
-            $chat_id = Store::$db->insert('chats', [
-                'id' => __::uuid(version: 7),
-                'name' => 'Beispiel-Chat #1',
-                'provider_id' => null,
-                'task_id' => null
-            ]);
-            Store::$db->insert('chats_entries', [
-                'id' => __::uuid(version: 7),
-                'content' =>
-                    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.',
-                'chat_id' => $chat_id
-            ]);
-            Store::$db->insert('tasks_knowledge', [
-                'id' => __::uuid(version: 7),
-                'task_id' => $task_id,
-                'knowledge_id' => $knowledge_id,
-                'order' => 1
-            ]);
-            Store::$db->insert('tasks_skills', [
-                'id' => __::uuid(version: 7),
-                'task_id' => $task_id,
-                'name' => 'whatsapp',
-                'order' => 1
-            ]);
-            Store::$db->insert('tasks_providers', [
-                'id' => __::uuid(version: 7),
-                'task_id' => $task_id,
-                'provider_id' => $provider_id,
-                'order' => 1
-            ]);
+            for ($i = 1; $i < mt_rand(15, 20); $i++) {
+                $task_id = Store::$db->insert('tasks', [
+                    'id' => __::uuid(version: 7),
+                    'name' => 'Beispiel-Task #' . $i,
+                    'schedule' => '5 4 * * *',
+                    'order' => $i
+                ]);
+                $knowledge_id = Store::$db->insert('knowledge', [
+                    'id' => __::uuid(version: 7),
+                    'name' => 'Beispiel-Wissen #' . $i,
+                    'content' => 'Dies ist ein Beispiel-Eintrag im Wissensbereich.',
+                    'order' => $i
+                ]);
+                $provider_id = Store::$db->insert('providers', [
+                    'id' => __::uuid(version: 7),
+                    'name' => 'ChatGPT Anbindung #' . $i,
+                    'service' => 'chatgpt',
+                    'api_key' =>
+                        'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+                ]);
+                $chat_id = Store::$db->insert('chats', [
+                    'id' => __::uuid(version: 7),
+                    'name' => 'Beispiel-Chat #' . $i,
+                    'provider_id' => $provider_id,
+                    'task_id' => $task_id
+                ]);
+                $user_id = Store::$db->fetch_var('SELECT id FROM users LIMIT 1');
+                for ($j = 1; $j <= mt_rand(30, 40); $j++) {
+                    Store::$db->insert('chats_messages', [
+                        'id' => __::uuid(version: 7),
+                        'content' =>
+                            'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.',
+                        'timestamp' => round(microtime(true) * 1000),
+                        'user_id' => $user_id,
+                        'chat_id' => $chat_id
+                    ]);
+                }
+                Store::$db->insert('tasks_knowledge', [
+                    'id' => __::uuid(version: 7),
+                    'task_id' => $task_id,
+                    'knowledge_id' => $knowledge_id,
+                    'order' => 1
+                ]);
+                Store::$db->insert('tasks_skills', [
+                    'id' => __::uuid(version: 7),
+                    'task_id' => $task_id,
+                    'skill_id' => 'whatsapp',
+                    'order' => 1
+                ]);
+                Store::$db->insert('tasks_providers', [
+                    'id' => __::uuid(version: 7),
+                    'task_id' => $task_id,
+                    'provider_id' => $provider_id,
+                    'order' => 1
+                ]);
+            }
         }
+    }
+
+    function abort()
+    {
+        Helper::response(
+            success: false,
+            message: 'Route not found',
+            public_message: 'Route nicht gefunden',
+            status_code: 404
+        );
     }
 
     function getRoute()
@@ -208,54 +225,36 @@ class Api
 
         $method = $_SERVER['REQUEST_METHOD'];
 
-        if ($method === 'GET' && preg_match('/^\/home$/', $path, $matches)) {
-            $c = new Home();
-            $c->index();
-        } elseif ($method === 'GET' && preg_match('/^\/chats$/', $path, $matches)) {
-            $c = new Chats();
-            $c->index();
-        } elseif ($method === 'POST' && preg_match('/^\/chats\/create$/', $path, $matches)) {
-            $c = new Chats();
-            $c->create(@$_POST['name']);
-        } elseif ($method === 'GET' && preg_match('/^\/chats\/(.+)?$/', $path, $matches)) {
-            $c = new Chats();
-            $c->read($matches[1]);
-        } elseif ($method === 'POST' && preg_match('/^\/chats\/delete$/', $path, $matches)) {
-            $c = new Chats();
-            $c->delete(@$_POST['id']);
-        } elseif ($method === 'GET' && preg_match('/^\/skills$/', $path, $matches)) {
-            $c = new Skills();
-            $c->index();
-        } elseif ($method === 'GET' && preg_match('/^\/knowledge$/', $path, $matches)) {
-            $c = new Knowledge();
-            $c->index();
-        } elseif ($method === 'POST' && preg_match('/^\/knowledge\/create$/', $path, $matches)) {
-            $c = new Knowledge();
-            $c->create(@$_POST['name'], @$_POST['content']);
-        } elseif ($method === 'POST' && preg_match('/^\/knowledge\/update$/', $path, $matches)) {
-            $c = new Knowledge();
-            $c->update(@$_POST['id'], @$_POST['name'], @$_POST['content'], @$_POST['order']);
-        } elseif ($method === 'POST' && preg_match('/^\/knowledge\/delete$/', $path, $matches)) {
-            $c = new Knowledge();
-            $c->delete(@$_POST['id']);
-        } elseif ($method === 'GET' && preg_match('/^\/providers$/', $path, $matches)) {
-            $c = new Providers();
-            $c->index();
-        } elseif ($method === 'POST' && preg_match('/^\/providers\/create$/', $path, $matches)) {
-            $c = new Providers();
-            $c->create(@$_POST['type'], @$_POST['api_key']);
-        } elseif ($method === 'POST' && preg_match('/^\/providers\/update$/', $path, $matches)) {
-            $c = new Providers();
-            $c->update(@$_POST['id'], @$_POST['type'], @$_POST['api_key']);
-        } elseif ($method === 'POST' && preg_match('/^\/providers\/delete$/', $path, $matches)) {
-            $c = new Providers();
-            $c->delete(@$_POST['id']);
-        } elseif ($method === 'GET' && preg_match('/^\/tasks$/', $path, $matches)) {
-            $c = new Tasks();
-            $c->index();
-        }
+        preg_match('/^\/(.+?)(\/|$)/', $path, $matches);
+        $className = 'Api\\' . __::pascal_case($matches[1] ?? null);
+        $c = new $className();
 
-        die();
+        if ($method === 'GET' && preg_match('/^\/([^\/]+)$/', $path, $matches)) {
+            if (!method_exists($c, 'index')) {
+                $this->abort();
+            }
+            $c->index();
+        } elseif ($method === 'POST' && preg_match('/^\/([^\/]+)\/create$/', $path, $matches)) {
+            if (!method_exists($c, 'create')) {
+                $this->abort();
+            }
+            $c->create(@$_POST);
+        } elseif ($method === 'GET' && preg_match('/^\/([^\/]+)\/(.+)?$/', $path, $matches)) {
+            if (!method_exists($c, 'read')) {
+                $this->abort();
+            }
+            $c->read($matches[2]);
+        } elseif ($method === 'POST' && preg_match('/^\/([^\/]+)\/update$/', $path, $matches)) {
+            if (!method_exists($c, 'update')) {
+                $this->abort();
+            }
+            $c->update(@$_POST['id'], @$_POST);
+        } elseif ($method === 'POST' && preg_match('/^\/([^\/]+)\/delete$/', $path, $matches)) {
+            if (!method_exists($c, 'delete')) {
+                $this->abort();
+            }
+            $c->delete(@$_POST['id']);
+        }
     }
 }
 

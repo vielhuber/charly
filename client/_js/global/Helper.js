@@ -45,4 +45,33 @@ export default class Helper {
         }
         document.title = value;
     }
+
+    static buildSelect(name = null, data = null, id = null, disabled = false) {
+        let html = '';
+        html += '<select required="required" name="' + name + '"' + (disabled ? ' disabled="disabled"' : '') + '>';
+        html += '<option value=""></option>';
+        if (id !== null) {
+            let exists = false;
+            data.forEach(data__value => {
+                if (id === data__value.id) {
+                    exists = true;
+                }
+            });
+            if (exists === false) {
+                html += '<option value="' + id + '" selected="selected">' + id + ' (UNBEKANNT!)</option>';
+            }
+        }
+        data.forEach(data__value => {
+            html +=
+                '<option value="' +
+                data__value.id +
+                '"' +
+                (id !== null && id === data__value.id ? ' selected="selected"' : '') +
+                '>' +
+                data__value.name +
+                '</option>';
+        });
+        html += '</select>';
+        return html;
+    }
 }

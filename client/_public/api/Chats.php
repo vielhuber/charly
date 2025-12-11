@@ -8,21 +8,39 @@ class Chats
     function index()
     {
         try {
-            $chats = Store::$db->fetch_all('SELECT * FROM chats ORDER BY id DESC');
-            $data = $chats;
-            Helpers::response(data: $data);
+            $data = Store::$db->fetch_all('
+                SELECT c.*, MAX(cm.timestamp) as last_message_timestamp
+                FROM chats c
+                LEFT JOIN chats_messages cm ON c.id = cm.chat_id
+                GROUP BY c.id
+                ORDER BY last_message_timestamp DESC, c.id DESC
+            ');
+            Helper::response(data: $data);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function create($name)
+    function create($data)
     {
         try {
-            $chat_id = Store::$db->insert('chats', ['id' => __::uuid(version: 7), 'name' => $name]);
-            Helpers::response(data: ['id' => $chat_id]);
+            $id = Store::$db->insert('chats', [
+                'id' => __::uuid(version: 7),
+                'name' => $data['name'],
+                'provider_id' => $data['provider_id']
+            ]);
+            if (isset($data['message']) && !empty($data['message'])) {
+                Store::$db->insert('chats_messages', [
+                    'id' => __::uuid(version: 7),
+                    'content' => $data['message'],
+                    'timestamp' => round(microtime(true) * 1000),
+                    'user_id' => Helper::getCurrentUserId(),
+                    'chat_id' => $id
+                ]);
+            }
+            Helper::response(data: ['id' => $id]);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
@@ -30,10 +48,28 @@ class Chats
     {
         try {
             $chat = Store::$db->fetch_row('SELECT * FROM chats WHERE id = ?', $id);
+            $chat['messages'] = Store::$db->fetch_all(
+                'SELECT * FROM chats_messages WHERE chat_id = ? ORDER BY timestamp ASC',
+                $id
+            );
             $data = $chat;
-            Helpers::response(data: $data);
+            Helper::response(data: $data);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+        }
+    }
+
+    function update($id, $data)
+    {
+        try {
+            Store::$db->update(
+                'chats',
+                ['name' => @$data['name'], 'provider_id' => @$data['provider_id']],
+                ['id' => $id]
+            );
+            Helper::response();
+        } catch (\Exception $e) {
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Editieren!');
         }
     }
 
@@ -41,9 +77,9 @@ class Chats
     {
         try {
             Store::$db->delete('chats', ['id' => $id]);
-            Helpers::response();
+            Helper::response();
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');
         }
     }
 }

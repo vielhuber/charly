@@ -18,7 +18,6 @@ export default class App {
     async load() {}
 
     async startApp() {
-        Helper.setUrl('/');
         Helper.updateTitle('');
         await this.initLogin();
         this.buildHtml();
@@ -97,6 +96,7 @@ export default class App {
                 e.preventDefault();
                 await Store.api.logout();
                 document.querySelector('#app').innerHTML = '';
+                Helper.setUrl('/');
                 this.startApp();
             }
         });
@@ -175,9 +175,14 @@ export default class App {
         document.querySelector('#app').addEventListener('dragover', e => {
             let $list = e.target.closest('.drag-and-drop-list');
             if ($list && $draggedElement) {
+                // Check if dragged element belongs to this list
+                if ($draggedElement.parentElement !== $list) {
+                    return;
+                }
                 e.preventDefault();
                 let y = e.clientY;
-                let draggableElements = [...$list.querySelectorAll('li:not(.dragging)')];
+                // Only get direct children li elements of this list
+                let draggableElements = [...$list.querySelectorAll(':scope > li:not(.dragging)')];
                 let afterElement = draggableElements.reduce(
                     (closest, child) => {
                         let box = child.getBoundingClientRect();
@@ -203,7 +208,7 @@ export default class App {
             let $list = e.target.closest('.drag-and-drop-list');
             if ($list) {
                 e.preventDefault();
-                $list.querySelectorAll('li').forEach(($el, index) => {
+                $list.querySelectorAll(':scope > li').forEach(($el, index) => {
                     let $input = $el.querySelector('input[name="order"]'),
                         $form = $el.querySelector('form');
                     if ($input) {

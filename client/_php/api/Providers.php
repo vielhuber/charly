@@ -8,35 +8,39 @@ class Providers
     function index()
     {
         try {
-            $providers = Store::$db->fetch_all('SELECT * FROM providers ORDER BY type ASC, ID ASC');
-            $data = $providers;
-            Helpers::response(data: $data);
+            $data = Store::$db->fetch_all('SELECT * FROM providers ORDER BY name ASC, ID ASC');
+            Helper::response(data: $data);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function create($type, $api_key)
+    function create($data)
     {
         try {
-            $provider_id = Store::$db->insert('providers', [
+            $id = Store::$db->insert('providers', [
                 'id' => __::uuid(version: 7),
-                'type' => $type,
-                'api_key' => $api_key
+                'name' => @$data['name'],
+                'service' => @$data['service'],
+                'api_key' => @$data['api_key']
             ]);
-            Helpers::response(data: ['id' => $provider_id]);
+            Helper::response(data: ['id' => $id]);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function update($id, $type, $api_key)
+    function update($id, $data)
     {
         try {
-            Store::$db->update('providers', ['type' => $type, 'api_key' => $api_key], ['id' => $id]);
-            Helpers::response();
+            Store::$db->update(
+                'providers',
+                ['name' => @$data['name'], 'service' => @$data['service'], 'api_key' => @$data['api_key']],
+                ['id' => $id]
+            );
+            Helper::response();
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Editieren!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Editieren!');
         }
     }
 
@@ -44,9 +48,9 @@ class Providers
     {
         try {
             Store::$db->delete('providers', ['id' => $id]);
-            Helpers::response();
+            Helper::response();
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');
         }
     }
 }

@@ -6,9 +6,16 @@ export default class Chats {
 
     async init() {
         this.$content = document.querySelector('.content');
+        await this.preloadData();
         await this.buildHtml();
         this.bindLinks();
         Helper.updateTitle('Chats');
+    }
+
+    async preloadData() {
+        this.providers = await Helper.fetch('/api/providers', {
+            method: 'GET'
+        });
     }
 
     async buildHtml() {
@@ -41,10 +48,12 @@ export default class Chats {
                 class="general-form"
                 method="post"
                 action="/api/chats/create"
-                data-target="/api/chats/%ID%"
+                data-target="/chats/%ID%"
                 data-clear-form
         >
                 <input type="text" required="required" name="name" value="" placeholder="Name..." />
+                ${Helper.buildSelect('provider_id', this.providers?.data)}
+                <textarea name="message" required="required" placeholder="Initial Message..."></textarea>
                 <button type="submit">Create</button>
             </form>
         `;

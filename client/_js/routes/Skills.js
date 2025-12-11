@@ -3,29 +3,31 @@ export default class Skills {
     route = '/skills';
 
     async init() {
+        this.$content = document.querySelector('.content');
+        await this.preloadData();
         await this.buildHtml();
         Helper.updateTitle('Skills');
     }
 
-    async buildHtml() {
-        this.$content = document.querySelector('.content');
-
-        let response = await Helper.fetch('/api/skills', {
+    async preloadData() {
+        this.response = await Helper.fetch('/api/skills', {
             method: 'GET'
         });
+    }
 
-        if (response.success === false) {
+    async buildHtml() {
+        if (this.response.success === false) {
             console.log(response);
-            this.$content.innerHTML = response.public_message;
+            this.$content.innerHTML = this.response.public_message;
             return;
         }
 
         let html = '';
         html += '<ul>';
-        response.data.mcpServers.forEach(mcpServers__value => {
+        this.response.data.mcpServers.forEach(mcpServers__value => {
             html += `
                 <li>
-                    ${mcpServers__value.name} - ${mcpServers__value.type}
+                    ${mcpServers__value.name} - ${mcpServers__value.id} - ${mcpServers__value.type}
                 </li>
             `;
         });

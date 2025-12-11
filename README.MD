@@ -36,8 +36,8 @@ a comprehensive model context protocol (mcp) server gateway that integrates mult
 
 - `cd client`
 - `cp .env.example .env`
-- `php auth/index.php migrate`
-- `php auth/index.php create "david@vielhuber.de" "secret"`
+- `php ./_php/auth/index.php migrate`
+- `php ./_php/auth/index.php create "david@vielhuber.de" "secret"`
 - setup vhost (apache/nginx with ssl) that points to `/client/_public`
 
 ### update

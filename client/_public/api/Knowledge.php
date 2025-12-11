@@ -8,15 +8,14 @@ class Knowledge
     function index()
     {
         try {
-            $knowledge = Store::$db->fetch_all('SELECT * FROM knowledge ORDER BY `order` ASC');
-            $data = $knowledge;
-            Helpers::response(data: $data);
+            $data = Store::$db->fetch_all('SELECT * FROM knowledge ORDER BY `order` ASC');
+            Helper::response(data: $data);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function create($name, $content)
+    function create($data)
     {
         try {
             $order = Store::$db->fetch_var('SELECT `order` FROM knowledge ORDER BY `order` DESC LIMIT 1');
@@ -25,25 +24,29 @@ class Knowledge
             } else {
                 $order = 1;
             }
-            $knowledge_id = Store::$db->insert('knowledge', [
+            $id = Store::$db->insert('knowledge', [
                 'id' => __::uuid(version: 7),
-                'name' => $name,
-                'content' => $content,
+                'name' => @$data['name'],
+                'content' => @$data['content'],
                 'order' => $order
             ]);
-            Helpers::response(data: ['id' => $knowledge_id]);
+            Helper::response(data: ['id' => $id]);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function update($id, $name, $content, $order)
+    function update($id, $data)
     {
         try {
-            Store::$db->update('knowledge', ['name' => $name, 'content' => $content, 'order' => $order], ['id' => $id]);
-            Helpers::response();
+            Store::$db->update(
+                'knowledge',
+                ['name' => @$data['name'], 'content' => @$data['content'], 'order' => @$data['order']],
+                ['id' => $id]
+            );
+            Helper::response();
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Editieren!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Editieren!');
         }
     }
 
@@ -51,9 +54,9 @@ class Knowledge
     {
         try {
             Store::$db->delete('knowledge', ['id' => $id]);
-            Helpers::response();
+            Helper::response();
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');
         }
     }
 }

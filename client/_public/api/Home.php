@@ -6,10 +6,10 @@ class Home
     function index()
     {
         try {
-            $response = ['message' => 'Welcome to the API'];
-            Helpers::response(data: $response);
+            $data = ['message' => 'Welcome to the API'];
+            Helper::response(data: $data);
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helper::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 }
