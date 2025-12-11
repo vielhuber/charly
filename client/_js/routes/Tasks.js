@@ -4,6 +4,11 @@ export default class Tasks {
     route = '/tasks';
 
     async init() {
+        await this.buildHtml();
+        Helper.updateTitle('Tasks');
+    }
+
+    async buildHtml() {
         this.$content = document.querySelector('.content');
 
         let response = await Helper.fetch('/api/tasks', {

@@ -3,6 +3,11 @@ export default class Skills {
     route = '/skills';
 
     async init() {
+        await this.buildHtml();
+        Helper.updateTitle('Skills');
+    }
+
+    async buildHtml() {
         this.$content = document.querySelector('.content');
 
         let response = await Helper.fetch('/api/skills', {

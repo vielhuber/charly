@@ -3,44 +3,47 @@ namespace Api;
 
 use vielhuber\stringhelper\__;
 
-class Chats
+class Providers
 {
     function index()
     {
         try {
-            $chats = Store::$db->fetch_all('SELECT * FROM chats ORDER BY id DESC');
-            $data = $chats;
+            $providers = Store::$db->fetch_all('SELECT * FROM providers ORDER BY type ASC, ID ASC');
+            $data = $providers;
             Helpers::response(data: $data);
         } catch (\Exception $e) {
             Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function create($name)
+    function create($type, $api_key)
     {
         try {
-            $chat_id = Store::$db->insert('chats', ['id' => __::uuid(version: 7), 'name' => $name]);
-            Helpers::response(data: ['id' => $chat_id]);
+            $provider_id = Store::$db->insert('providers', [
+                'id' => __::uuid(version: 7),
+                'type' => $type,
+                'api_key' => $api_key
+            ]);
+            Helpers::response(data: ['id' => $provider_id]);
         } catch (\Exception $e) {
             Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
         }
     }
 
-    function read($id)
+    function update($id, $type, $api_key)
     {
         try {
-            $chat = Store::$db->fetch_row('SELECT * FROM chats WHERE id = ?', $id);
-            $data = $chat;
-            Helpers::response(data: $data);
+            Store::$db->update('providers', ['type' => $type, 'api_key' => $api_key], ['id' => $id]);
+            Helpers::response();
         } catch (\Exception $e) {
-            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Unbekannter Fehler!');
+            Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Editieren!');
         }
     }
 
     function delete($id)
     {
         try {
-            Store::$db->delete('chats', ['id' => $id]);
+            Store::$db->delete('providers', ['id' => $id]);
             Helpers::response();
         } catch (\Exception $e) {
             Helpers::response(success: false, message: $e->getMessage(), public_message: 'Fehler beim Löschen!');

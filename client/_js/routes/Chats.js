@@ -8,6 +8,7 @@ export default class Chats {
         this.$content = document.querySelector('.content');
         await this.buildHtml();
         this.bindLinks();
+        Helper.updateTitle('Chats');
     }
 
     async buildHtml() {
@@ -20,6 +21,7 @@ export default class Chats {
         let html = '';
 
         html += '<h2>Chats</h2>';
+
         html += '<ul>';
         response.data.forEach(data_value => {
             html += `
@@ -31,12 +33,21 @@ export default class Chats {
             `;
         });
         html += '</ul>';
+
         html += '<div class="chat-content">...</div>';
 
-        html += '<form method="post" action="/api/chats">';
-        html += '<input type="text" required="required" name="name" value="" placeholder="Name..." />';
-        html += '<button type="submit">Create Chat</button>';
-        html += '</form>';
+        html += `
+            <form
+                class="general-form"
+                method="post"
+                action="/api/chats/create"
+                data-target="/api/chats/%ID%"
+                data-clear-form
+        >
+                <input type="text" required="required" name="name" value="" placeholder="Name..." />
+                <button type="submit">Create</button>
+            </form>
+        `;
 
         this.$content.innerHTML = html;
 
@@ -49,22 +60,9 @@ export default class Chats {
         this.$content.querySelectorAll('.chat-link').forEach($el => {
             $el.addEventListener('click', async e => {
                 e.preventDefault();
-                window.history.pushState({}, '', e.target.closest('.chat-link').getAttribute('href'));
+                Helper.setUrl(e.target.closest('.chat-link').getAttribute('href'));
                 this.loadChatDetail();
             });
-        });
-        let $form = this.$content.querySelector('form');
-        $form.addEventListener('submit', async e => {
-            e.preventDefault();
-            let response = await Helper.fetch($form.getAttribute('action'), {
-                method: $form.getAttribute('method'),
-                body: new URLSearchParams(new FormData($form))
-            });
-            if (response.success === true) {
-                $form.reset();
-                window.history.pushState({}, '', '/chats/' + response.data.chat_id);
-                this.init();
-            }
         });
     }
 

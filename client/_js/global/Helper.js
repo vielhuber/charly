@@ -29,4 +29,20 @@ export default class Helper {
                 });
         });
     }
+
+    static setUrl(url = '/') {
+        window.history.pushState({}, '', url);
+    }
+
+    static updateTitle(title = null) {
+        let value = '';
+        value += '🤖charly🤖';
+        if (title) {
+            value += ' ';
+            value += '//';
+            value += ' ';
+            value += title;
+        }
+        document.title = value;
+    }
 }
